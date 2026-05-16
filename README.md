@@ -1,7 +1,7 @@
 # Data Augmentation & 5GHz Multimedia Processing
 
 ## Overview
-This repository contains the code and research for our Multimedia Processing and Architecture (MMPA) course project. The primary focus of this project is on advanced data augmentation strategies and high-frequency (5GHz) multimedia processing. 
+This repository contains research and code focused on Multimedia Processing and Architecture. The primary focus of this project is on advanced data augmentation strategies and high-frequency (5GHz) multimedia processing. 
 
 ## Features
 - **Data Augmentation Models**: Sophisticated augmentation techniques designed to improve model robustness and generalization in multimedia applications.
