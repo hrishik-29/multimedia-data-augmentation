@@ -1,0 +1,1284 @@
+\documentclass[12pt,a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────────────
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{parskip}
+\usepackage{setspace}
+\usepackage{microtype}
+\usepackage{tcolorbox}
+\usepackage{fontenc}
+\usepackage{inputenc}
+
+% ── Colors ────────────────────────────────────────────────────────────────────
+\definecolor{iiitblue}{RGB}{0, 62, 126}
+\definecolor{iiitgold}{RGB}{180, 140, 0}
+\definecolor{codebg}{RGB}{245, 247, 250}
+\definecolor{codeframe}{RGB}{180, 190, 210}
+\definecolor{keywordcolor}{RGB}{0, 100, 180}
+\definecolor{commentcolor}{RGB}{100, 140, 80}
+\definecolor{stringcolor}{RGB}{160, 50, 50}
+\definecolor{lightgray}{RGB}{240, 240, 240}
+\definecolor{darkgray}{RGB}{80, 80, 80}
+
+% ── Hyperref Setup ────────────────────────────────────────────────────────────
+\hypersetup{
+    colorlinks=true,
+    linkcolor=iiitblue,
+    urlcolor=iiitblue,
+    citecolor=iiitblue,
+    pdftitle={Wireless Metric-Driven Intrusion Detection in VANETs},
+    pdfauthor={Team CS23B}
+}
+
+% ── Listings (Code Blocks) ────────────────────────────────────────────────────
+\lstdefinestyle{pythonstyle}{
+    backgroundcolor=\color{codebg},
+    frame=single,
+    framerule=0.8pt,
+    rulecolor=\color{codeframe},
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{keywordcolor}\bfseries,
+    commentstyle=\color{commentcolor}\itshape,
+    stringstyle=\color{stringcolor},
+    numberstyle=\tiny\color{darkgray},
+    numbers=left,
+    numbersep=6pt,
+    breaklines=true,
+    breakatwhitespace=false,
+    showstringspaces=false,
+    tabsize=4,
+    language=Python,
+    captionpos=b,
+    xleftmargin=15pt,
+    xrightmargin=5pt,
+}
+\lstset{style=pythonstyle}
+
+% ── Header / Footer ───────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{iiitblue}{\small IIITDM Kancheepuram}}
+\fancyhead[R]{\textcolor{iiitblue}{\small Wireless Networks -- Project Report}}
+\fancyfoot[C]{\textcolor{darkgray}{\thepage}}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% ── Section Formatting ────────────────────────────────────────────────────────
+\titleformat{\section}{\large\bfseries\color{iiitblue}}{}{0em}{\thesection\quad}[\vspace{0.5ex}\hrule height 0.4pt\vspace{0.5ex}]
+\titleformat{\subsection}{\normalsize\bfseries\color{iiitblue!80}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{darkgray}}{\thesubsubsection}{1em}{}
+
+% ── tcolorbox for callouts ─────────────────────────────────────────────────────
+\tcbuselibrary{skins,breakable}
+\newtcolorbox{insight}[1][Key Insight]{
+    colback=iiitblue!5,
+    colframe=iiitblue!60,
+    fonttitle=\bfseries\small,
+    title=#1,
+    breakable
+}
+\newtcolorbox{result}[1][Result]{
+    colback=green!5,
+    colframe=green!50!black,
+    fonttitle=\bfseries\small,
+    title=#1,
+    breakable
+}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\begin{document}
+\setstretch{1.15}
+
+% ── Title Page ────────────────────────────────────────────────────────────────
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+
+    \includegraphics[width=0.3\textwidth]{iiitdm_logo_square.jpg}\\[0.4cm]
+
+    {\Large\bfseries\color{iiitblue} IIITDM Kancheepuram}\\[0.4cm]
+    
+
+    \rule{\linewidth}{1.5pt}\\[0.5cm]
+    {\LARGE\bfseries\color{iiitblue}
+        Wireless Metric-Driven Intrusion Detection\\[0.3cm]
+        in Vehicular Ad Hoc Networks (VANETs)}\\[0.5cm]
+    \rule{\linewidth}{1.5pt}\\[1.2cm]
+
+    {\large\bfseries Project Report}\\[0.4cm]
+    
+
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Name} & \textbf{Roll Number} \\
+        \midrule
+        P. Aditya           & CS23B1087 \\
+        P.L.N. Nikhil       & CS23B1038 \\
+        G. Hrishik Reddy    & CS23B1083 \\
+        K. Jagadeesh        & CS23B1084 \\
+        \bottomrule
+    \end{tabular}
+
+    \vfill
+    {\normalsize April 2026}
+\end{titlepage}
+
+% ── Table of Contents ─────────────────────────────────────────────────────────
+\tableofcontents
+\newpage
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Abstract}
+% ═════════════════════════════════════════════════════════════════════════════
+
+Vehicular Ad Hoc Networks (VANETs) form the communication backbone of modern
+intelligent transportation systems, enabling vehicles to exchange safety-critical data
+over Vehicle-to-Vehicle (V2V) and Vehicle-to-Infrastructure (V2I) links in real time.
+The open wireless medium that enables this cooperation simultaneously exposes the
+network to cyberattacks including Denial-of-Service flooding, Sybil identity fabrication,
+false data injection, and radio-frequency jamming.
+
+This project implements and evaluates a multi-model intrusion detection system for
+VANETs using the VeReMi (Vehicular Reference Misbehaviour) dataset. Three model
+families are studied: classical ensemble classifiers (Random Forest and XGBoost), a
+deep learning architecture (ConvGRU combining convolutional and gated recurrent units),
+and an adversarial evaluation pipeline based on the Fast Gradient Sign Method (FGSM).
+Time-windowed feature engineering transforms raw beacon traces into compact statistical
+feature vectors that capture the physical-layer signatures — position consistency,
+speed magnitude, acceleration variance, and heading-speed alignment — that are
+theoretically grounded in VANET wireless metrics.
+
+Experimental results on a balanced 3\,104-sample subset drawn from 22 million records
+demonstrate that Random Forest achieves 91.7\% accuracy and XGBoost 93.9\% under
+clean conditions. Under FGSM adversarial perturbation, Random Forest collapses to
+50.0\%, validating the critical vulnerability identified in the literature. Adversarial
+retraining restores performance to 94.6\% for Random Forest, exceeding its original
+baseline. The ConvGRU model achieves 69.5\% accuracy, consistent with the inherent
+challenge of learning temporal patterns from small sequential windows with limited data.
+These results comprehensively validate the literature's core claims and expose the
+adversarial robustness gap as the most pressing open problem in VANET IDS research.
+
+\vspace{0.5cm}
+\noindent\textbf{Keywords:} VANETs, Intrusion Detection, Random Forest, XGBoost, ConvGRU,
+Adversarial Robustness, FGSM, VeReMi Dataset, Wireless Security
+
+\newpage
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Introduction}
+% ═════════════════════════════════════════════════════════════════════════════
+
+Connected vehicles have gradually transformed public roads into distributed wireless
+sensor networks. Each vehicle simultaneously generates, relays, and consumes data.
+Safety-critical applications — collision avoidance, emergency pre-emption, road hazard
+broadcasts — tolerate no ambiguity: a corrupted or delayed message can have immediate
+physical consequences.
+
+Detecting intrusions in this environment is qualitatively harder than classical network
+security for three reasons:
+\begin{enumerate}[leftmargin=2em]
+    \item \textbf{Continuous topology change:} Vehicle mobility reshapes the network graph
+    every few seconds, making static rule sets obsolete.
+    \item \textbf{Physical-layer attacks:} Jamming and RSSI spoofing operate below the
+    layer where packet contents are visible, so payload inspection alone arrives too late.
+    \item \textbf{Hardware constraints:} On-Board Units (OBUs) have tightly limited CPU,
+    memory, and power budgets — models comfortable on a server may be entirely impractical
+    for embedded deployment.
+\end{enumerate}
+
+\subsection{Project Objectives}
+
+This project aims to:
+\begin{itemize}[leftmargin=2em]
+    \item Implement a complete IDS pipeline on the VeReMi VANET dataset, from raw
+    trace data through time-window feature engineering to classification.
+    \item Compare classical ML (Random Forest, XGBoost) against a deep learning
+    approach (ConvGRU) using a consistent evaluation protocol.
+    \item Quantitatively validate the adversarial vulnerability gap identified in the
+    literature survey, and demonstrate that adversarial retraining mitigates it.
+    \item Connect experimental outcomes to specific claims in the surveyed literature,
+    providing an empirical grounding for the theoretical arguments.
+\end{itemize}
+
+\subsection{Document Organisation}
+
+Section~3 provides the background on VANETs and wireless attack types. Section~4
+surveys five representative works from the literature. Section~5 describes the VeReMi
+dataset. Section~6 details the feature engineering methodology. Sections~7--9 present
+the three model families and their implementation. Section~10 covers adversarial attacks
+and defences. Section~11 analyses results comprehensively. Section~12 discusses findings
+in relation to the literature, and Section~13 concludes with future directions.
+
+\newpage
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Background}
+% ═════════════════════════════════════════════════════════════════════════════
+
+\subsection{VANET Architecture}
+
+A VANET is a mobile ad hoc network whose nodes are road vehicles. Each vehicle carries
+an OBU that periodically broadcasts Basic Safety Messages (BSMs) over the IEEE\,802.11p
+/ DSRC standard, advertising position, speed, heading, and local hazard information.
+Fixed Roadside Units (RSUs) supplement the vehicle-to-vehicle fabric with infrastructure
+anchors.
+
+Three physical-layer metrics carry particularly rich information about channel condition:
+
+\begin{description}[leftmargin=2em]
+    \item[RSSI (Received Signal Strength Indicator):] A power-level measurement at the
+    receiver. A sender claiming to be 500\,m away but whose signal arrives at the strength
+    expected from 50\,m presents a physical inconsistency that is very difficult to fake
+    simultaneously with crafting convincing message content.
+    \item[PDR (Packet Delivery Ratio):] The fraction of transmitted packets that arrive
+    successfully. Channel flooding degrades PDR through induced collisions and buffer
+    saturation.
+    \item[PSR (Packet Send Ratio):] The rate at which a node actively transmits. Spikes
+    in PSR at a single node, while PDR collapses network-wide, are a reliable DoS
+    signature.
+\end{description}
+
+\subsection{Taxonomy of VANET Attacks}
+
+The attacks addressed across the surveyed and implemented work fall into three broad
+families:
+
+\subsubsection{Availability Attacks}
+Denial-of-Service flooding saturates channel capacity or exhausts OBU processing.
+Distributed DoS coordinates multiple compromised nodes to amplify this effect. Jamming
+injects broadband noise that elevates the noise floor and forces receivers to discard every
+frame.
+
+\subsubsection{Authenticity Attacks}
+Sybil attacks manufacture multiple fictitious vehicle identities from a single physical
+transmitter. False message injection inserts well-formed but fabricated events (phantom
+accidents, ghost queues) into the cooperative awareness layer. Position falsification
+corrupts GPS coordinates in beacons while keeping all other fields plausible.
+
+\subsubsection{Confidentiality Attacks}
+These expose driver identity or vehicle trajectory, often as a precursor to targeted
+surveillance. They are less relevant to the current IDS scope but inform the privacy
+architecture of the cryptographic layer.
+
+\newpage
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Literature Survey}
+% ═════════════════════════════════════════════════════════════════════════════
+
+\subsection{Class-Aware Oversampling for Robust Intrusion Detection in VANETs}
+\textit{Discover Computing, Springer, 2024~\cite{kapoor2024}}
+
+\textbf{Problem and Approach.}
+Attack events are statistically rare compared to normal communication. A model that
+labels every sample as benign achieves high aggregate accuracy while detecting nothing
+useful. Naive global oversampling introduces its own hazard: synthetic samples near
+the majority class inject noise precisely where the decision boundary is most sensitive.
+This paper reframes oversampling as a geometry problem: the feature space is projected
+to two dimensions using t-SNE, making spatial relationships between class clusters
+visible and computationally addressable. Oversampling is applied selectively — minority
+attack classes whose clusters sit close to the majority boundary receive aggressive
+augmentation via SMOTE and ADASYN, while well-separated clusters are largely left
+alone. A convolutional classifier is then trained on the augmented CICIDS2017 data.
+
+\textbf{Results and Limitations.}
+Geometry-aware oversampling consistently outperforms both unaugmented and uniformly
+oversampled baselines across precision, recall, and F1-score for low-frequency attack
+categories. However, CICIDS2017 captures enterprise-style traffic rather than V2V
+wireless exchanges, and the framework does not use RSSI or PDR as features. The
+t-SNE preprocessing step adds meaningful computational overhead.
+
+\subsection{ML-Based Cryptographic Protocols for Intrusion Detection (ML-CPIDS)}
+\textit{Scientific Reports, Nature Portfolio, 2023~\cite{liu2023}}
+
+\textbf{Problem and Approach.}
+Static detectors assume a reasonably stable environment. VANETs violate every such
+assumption — nodes appear and vanish continuously, and insider adversaries already hold
+valid credentials. ML-CPIDS builds a two-layer defence: pseudonymous certificate-based
+authentication at the communication layer, and an adaptive ML layer above it that
+monitors communication metadata for behavioural anomalies.
+
+\textbf{Results and Limitations.}
+ML-CPIDS achieves lower end-to-end latency than comparable purely cryptographic
+designs while delivering stronger detection against insider attacks. The key contribution
+is demonstrating that authentication and intrusion detection are complementary: a node
+that is authenticated is not necessarily trustworthy. The ML layer operates on
+higher-layer metadata, so sub-packet-level attacks such as RSSI manipulation and
+jamming remain outside its field of view.
+
+\subsection{Cascaded Deep Learning for DoS Detection with Multi-Variant Metaheuristic}
+\textit{Sensors, MDPI, 2023~\cite{manderna2023}}
+
+\textbf{Problem and Approach.}
+Effective DoS detection requires models that understand both the local packet-level
+signature of an attack burst and the longer temporal arc of a campaign. The
+proposed architecture chains a Cascaded CNN (CCNN) with a Self-Attention
+Bidirectional LSTM (SA-BiLSTM). The CCNN extracts spatial correlations from
+individual feature vectors; the SA-BiLSTM models traffic dynamics in both temporal
+directions and weights the most discriminative time steps through attention. A
+Multi-Variant Gradient-Based Optimisation (MV-GBO) metaheuristic automatically
+tunes hyperparameters of both components.
+
+\textbf{Results and Limitations.}
+The CCNN + SA-BiLSTM system outperforms single-component baselines across multiple
+DoS sub-types. However, two distinct deep networks in cascade plus a metaheuristic
+optimiser create a computational pipeline too heavy for OBU-grade embedded hardware.
+
+\subsection{RSSI Sequence and Vehicle Driving Matrix Based Sybil Detection}
+\textit{IEEE ICCSN, 2019~\cite{li2019}}
+
+\textbf{Problem and Approach.}
+A Sybil attacker presents multiple fake identities from a single physical transmitter.
+RSDM (RSSI Sequence and Driving Matrix) grounds detection in physics: each beacon
+carries claimed position and velocity. The detector collects the received RSSI sequence
+and compares it against the sequence that should result from a transmitter following the
+kinematics encoded in the beacon, given the free-space propagation model. A single
+physical transmitter cannot be in different spatial positions simultaneously — its RSSI
+readings can match the expected trajectory for at most one claimed identity.
+
+\textbf{Results and Limitations.}
+RSDM achieves high Sybil detection rates with low false-positives. Detection is fully
+distributed and requires no server round-trips. However, a sophisticated adversary
+who can simultaneously spoof GNSS signals can forge a kinematically consistent RSSI
+sequence. RSDM also does not generalise beyond Sybil detection.
+
+\subsection{AI-Driven Ensemble Classifier for Jamming Attack Detection}
+\textit{IEEE Access, 2023~\cite{elshafai2023}}
+
+\textbf{Problem and Approach.}
+Jamming can render every nearby vehicle's communications unintelligible at negligible
+hardware cost, and packet-content analysis is useless once a jam is in progress.
+Fourteen classical ML algorithms and four deep learning architectures are evaluated
+on channel-level features (busy time, noise power, collision rate). The three strongest
+performers — Random Forest, Extra Tree, and CNN — are combined into a majority-vote
+ensemble.
+
+\textbf{Results and Limitations.}
+The RF + ET + CNN ensemble achieves 99.81\% accuracy, confirming that model
+diversity provides meaningful gains over any individual strong learner. Running three
+models at inference time multiplies computational cost, and the evaluation scope is
+limited exclusively to jamming.
+
+\subsection{Synthesis and Gaps}
+
+Table~\ref{tab:lit_comparison} synthesises all five surveyed papers across the dimensions
+most relevant to the proposed system.
+
+\begin{table}[H]
+\centering
+\caption{Comparative summary of surveyed ML-based IDS approaches for VANETs.}
+\label{tab:lit_comparison}
+\small
+\begin{tabular}{p{3cm} p{2.2cm} p{2.8cm} p{3.2cm} p{3cm}}
+\toprule
+\textbf{Approach} & \textbf{Target} & \textbf{Key Metrics} & \textbf{Strengths} & \textbf{Limitations} \\
+\midrule
+Class-aware Oversampling \cite{kapoor2024}
+  & Multi-class
+  & Flow statistics
+  & Geometry-aware; better recall on rare attacks
+  & No physical-layer features; t-SNE overhead \\[4pt]
+ML-CPIDS \cite{liu2023}
+  & Insider, ID
+  & Timing metadata
+  & Dual-layer defence; low latency
+  & PKI dependency; blind to sub-packet attacks \\[4pt]
+CCNN + SA-BiLSTM \cite{manderna2023}
+  & DoS/DDoS
+  & Flow features
+  & Spatial + temporal; auto-tuned
+  & Too heavy for OBU hardware \\[4pt]
+RSDM \cite{li2019}
+  & Sybil
+  & RSSI, Position
+  & Physics-based; fully distributed
+  & GNSS spoofing vulnerability; narrow scope \\[4pt]
+Ensemble \cite{elshafai2023}
+  & Jamming
+  & Signal-level
+  & 99.81\% accuracy; model diversity
+  & 3$\times$ inference cost; scope limited to jamming \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three persistent gaps emerge: (1) physical-layer wireless metrics are underutilised as
+primary features; (2) temporal modelling is absent in lightweight settings; and (3)
+adversarial robustness is treated as an afterthought rather than a design constraint.
+
+\newpage
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Dataset: VeReMi}
+% ═════════════════════════════════════════════════════════════════════════════
+
+\subsection{Overview}
+
+The Vehicular Reference Misbehaviour (VeReMi) dataset is a standardised benchmark
+for VANET IDS research. Generated using SUMO (Simulation of Urban Mobility) with
+realistic vehicular mobility traces, it records per-beacon telemetry for both benign and
+misbehaving vehicles across a wide range of attack scenarios.
+
+\begin{lstlisting}[caption={Loading the VeReMi dataset using kagglehub.},
+                   label=lst:load_data]
+import kagglehub
+path = kagglehub.dataset_download("haider094/veremi-dataset")
+df = pd.read_csv(f'{path}/Veremi_final_dataset.csv')
+print(f"Full shape: {df.shape}")
+# Output: Full shape: (22165610, 21)
+\end{lstlisting}
+
+\subsection{Dataset Statistics}
+
+\begin{table}[H]
+\centering
+\caption{VeReMi dataset summary statistics.}
+\label{tab:dataset_stats}
+\begin{tabular}{ll}
+\toprule
+\textbf{Property} & \textbf{Value} \\
+\midrule
+Total records       & 22\,165\,610 \\
+Feature columns     & 21 \\
+Attack label (binary) & 0 = benign (12.1M), 1 = attack (10.0M) \\
+Unique attack types & 19 \\
+Message types       & Type 2: 3.05M, Type 3: 19.1M \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Feature Columns}
+
+The raw dataset contains the following columns:
+
+\begin{itemize}[leftmargin=2em]
+    \item \texttt{rcvTime}: Beacon reception timestamp (seconds).
+    \item \texttt{pos\_0, pos\_1}: Reported x and y position (metres).
+    \item \texttt{pos\_noise\_0, pos\_noise\_1}: Noise added to position reports.
+    \item \texttt{spd\_0, spd\_1}: Reported x and y speed components (m/s).
+    \item \texttt{spd\_noise\_0, spd\_noise\_1}: Speed noise components.
+    \item \texttt{acl\_0, acl\_1}: Reported x and y acceleration (m/s$^2$).
+    \item \texttt{acl\_noise\_0, acl\_noise\_1}: Acceleration noise components.
+    \item \texttt{hed\_0, hed\_1}: Heading vector components.
+    \item \texttt{hed\_noise\_0, hed\_noise\_1}: Heading noise components.
+    \item \texttt{attack}: Binary label (0 = benign, 1 = attack).
+    \item \texttt{attack\_type}: Named attack scenario string.
+\end{itemize}
+
+\subsection{Attack Type Distribution}
+
+\begin{table}[H]
+\centering
+\caption{Distribution of attack types in the VeReMi dataset (selected).}
+\label{tab:attack_types}
+\begin{tabular}{lr}
+\toprule
+\textbf{Attack Type} & \textbf{Count} \\
+\midrule
+GridSybil           & 1\,246\,576 \\
+DoS                 & 1\,228\,655 \\
+DoSDisruptive       & 1\,224\,482 \\
+DoSRandom           & 1\,223\,169 \\
+DoSDisruptiveSybil  & 1\,185\,897 \\
+DoSRandomSybil      & 1\,185\,897 \\
+RandomSpeedOffset   & 1\,143\,918 \\
+ConstPosOffset      & 1\,143\,918 \\
+$\ldots$ (12 more)  & 1\,143\,918 each \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Feature Engineering: Time-Window Approach}
+% ═════════════════════════════════════════════════════════════════════════════
+
+\subsection{Motivation}
+
+Raw per-beacon records are point-in-time snapshots. Individual beacons are ambiguous:
+a single high-speed reading is not necessarily an attack, but a sustained pattern of
+anomalous speed, inconsistent positions, and heading–speed misalignment over a one-second
+window is highly diagnostic. This section details the time-windowing approach that
+converts raw traces into structured feature vectors suitable for classification.
+
+\subsection{Window Construction}
+
+\begin{lstlisting}[caption={Time-window feature construction for one attack scenario.},
+                   label=lst:windows]
+WINDOW_SIZE = 1.0  # seconds
+
+for at_name, at_group in df.groupby('attack_type'):
+    at_sorted = at_group.sort_values('rcvTime').reset_index(drop=True)
+    t_min = at_sorted['rcvTime'].min()
+    at_sorted['time_bin'] = (
+        (at_sorted['rcvTime'] - t_min) / WINDOW_SIZE
+    ).astype(int)
+
+    for tb, win in at_sorted.groupby('time_bin'):
+        if len(win) < 3:   # skip degenerate windows
+            continue
+        # label: majority attack if >30% of messages are labelled 1
+        attack_rate = win['attack'].mean()
+        label = 1 if attack_rate > 0.3 else 0
+\end{lstlisting}
+
+A window is labelled as an attack if more than 30\% of its constituent beacons carry an
+attack label. This threshold was chosen to be robust to sparse but persistent
+misbehaviour while avoiding false positives from momentarily anomalous but legitimate
+messages.
+
+\subsection{Derived Feature Groups}
+
+\subsubsection{Speed Features}
+
+\begin{lstlisting}[caption={Speed magnitude and statistics.}, label=lst:speed_feats]
+spd_mag = np.sqrt(win['spd_0']**2 + win['spd_1']**2)
+
+feat.update({
+    'spd_x_mean': win['spd_0'].mean(),
+    'spd_x_std':  win['spd_0'].std(),
+    'spd_y_mean': win['spd_1'].mean(),
+    'spd_y_std':  win['spd_1'].std(),
+    'spd_mag_mean': spd_mag.mean(),
+    'spd_mag_std':  spd_mag.std(),
+    'spd_mag_max':  spd_mag.max(),
+})
+\end{lstlisting}
+
+Speed magnitude directly reflects the \texttt{RandomSpeed}, \texttt{ConstSpeed}, and
+\texttt{RandomSpeedOffset} attack families, where an attacker injects unrealistic velocity
+values.
+
+\subsubsection{Heading--Speed Consistency (Cosine Similarity)}
+
+A physically grounded consistency check compares the reported heading direction against
+the reported velocity vector:
+
+\begin{lstlisting}[caption={Heading--speed cosine similarity.}, label=lst:hs_cos]
+hed_mag = np.sqrt(win['hed_0']**2 + win['hed_1']**2)
+hs_dot  = win['hed_0'] * win['spd_0'] + win['hed_1'] * win['spd_1']
+hs_cos  = (hs_dot / (hed_mag * spd_mag + 1e-8)).clip(-1, 1)
+
+feat.update({
+    'hs_cos_mean': hs_cos.mean(),
+    'hs_cos_std':  hs_cos.std(),
+})
+\end{lstlisting}
+
+A vehicle whose heading vector is perpendicular to its velocity vector is physically
+impossible under normal driving conditions. Attackers who fabricate speed values without
+correspondingly adjusting heading produce a characteristically low cosine similarity.
+
+\subsubsection{Position and Acceleration Features}
+
+\begin{lstlisting}[caption={Position and acceleration feature extraction.}, label=lst:pos_acl]
+acl_mag       = np.sqrt(win['acl_0']**2 + win['acl_1']**2)
+pos_noise_mag = np.sqrt(win['pos_noise_0']**2 + win['pos_noise_1']**2)
+spd_noise_mag = np.sqrt(win['spd_noise_0']**2 + win['spd_noise_1']**2)
+
+feat.update({
+    'pos_range_x':    win['pos_0'].max() - win['pos_0'].min(),
+    'pos_range_y':    win['pos_1'].max() - win['pos_1'].min(),
+    'acl_mag_mean':   acl_mag.mean(),
+    'acl_mag_std':    acl_mag.std(),
+    'pos_noise_mean': pos_noise_mag.mean(),
+    'pos_noise_std':  pos_noise_mag.std(),
+    'spd_noise_mean': spd_noise_mag.mean(),
+    'spd_noise_std':  spd_noise_mag.std(),
+})
+\end{lstlisting}
+
+\subsubsection{Message Count}
+
+\begin{lstlisting}[caption={Message count as a DoS indicator.}, label=lst:msg_count]
+feat['msg_count'] = len(win)
+\end{lstlisting}
+
+Message count per unit time is the primary indicator of DoS attacks. A normal vehicle
+transmits BSMs at approximately 10\,Hz; a DoS node may transmit at several hundred
+messages per second within the same window.
+
+\subsection{Final Feature Vector}
+
+The engineered feature vector has 28 dimensions per window, as summarised in
+Table~\ref{tab:features}.
+
+\begin{table}[H]
+\centering
+\caption{Complete feature vector for VANET IDS classification.}
+\label{tab:features}
+\begin{tabular}{lll}
+\toprule
+\textbf{Group} & \textbf{Features} & \textbf{Attack Relevance} \\
+\midrule
+Message count    & msg\_count                        & DoS, DDoS \\
+Position stats   & mean, std, range (x, y)           & Pos. falsification \\
+Speed stats      & mean, std, max (components + mag) & Speed offset attacks \\
+Accel.\ stats    & mean, std of magnitude            & EventualStop, Disruptive \\
+Heading stats    & mean, std of components           & Direction falsification \\
+Heading--speed   & hs\_cos mean, std                 & Cross-field consistency \\
+Noise stats      & pos/spd noise mean, std           & Noise injection attacks \\
+Type fraction    & type\_mean                        & Protocol-level anomalies \\
+Scenario label   & attack\_type\_enc                 & Scenario context \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Sampling and Balancing}
+
+The full feature-engineered dataset contains thousands of windows per attack scenario.
+To ensure tractable training and class balance, a stratified 1\,552-sample subset per
+class (3\,104 total) is drawn, preserving the proportion of attack scenarios within the
+positive class:
+
+\begin{lstlisting}[caption={Balanced sampling and train/test split.}, label=lst:split]
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X_scaled, y, test_size=0.5, random_state=42, stratify=y
+)
+# Result: 1552 train / 1552 test, balanced 50/50 per split
+\end{lstlisting}
+
+\newpage
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Classical Machine Learning Models}
+% ═════════════════════════════════════════════════════════════════════════════
+
+\subsection{Random Forest}
+
+Random Forest is an ensemble of decorrelated decision trees trained on bootstrap samples
+of the training data with random feature subsets at each split. Its robustness to
+overfitting and interpretable feature importance scores make it the reference baseline
+in multiple surveyed papers~\cite{alkhulaidi2024, sharma2024}.
+
+\begin{lstlisting}[caption={Random Forest training and evaluation.}, label=lst:rf]
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, roc_auc_score
+
+rf = RandomForestClassifier(
+    n_estimators=200,
+    max_depth=15,
+    random_state=42
+)
+rf.fit(X_train, y_train)
+
+y_pred_rf  = rf.predict(X_test)
+rf_acc     = accuracy_score(y_test, y_pred_rf)
+rf_f1      = f1_score(y_test, y_pred_rf)
+rf_auc     = roc_auc_score(y_test, rf.predict_proba(X_test)[:,1])
+
+print(classification_report(y_test, y_pred_rf))
+\end{lstlisting}
+
+\subsubsection{Hyperparameters}
+\begin{itemize}[leftmargin=2em]
+    \item \texttt{n\_estimators = 200}: 200 trees provide stable vote aggregation without
+    excessive training time.
+    \item \texttt{max\_depth = 15}: Limits each tree's depth to prevent memorisation of
+    noisy window features.
+\end{itemize}
+
+\subsubsection{Results}
+
+\begin{result}[Random Forest Baseline Performance]
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{Support} \\
+\midrule
+Benign (0) & 0.93 & 0.91 & 0.92 & 776 \\
+Attack (1) & 0.91 & 0.93 & 0.92 & 776 \\
+\textbf{Overall} & & & \textbf{0.917} & \textbf{1552} \\
+\bottomrule
+\end{tabular}
+\\[4pt]
+AUC-ROC: 0.973 \quad Accuracy: 91.7\%
+\end{result}
+
+\subsection{XGBoost}
+
+XGBoost (eXtreme Gradient Boosting) builds trees sequentially, with each tree correcting
+residual errors of its predecessor using gradient descent on the loss function. Its
+regularisation terms (L1 and L2) and column subsampling make it particularly effective
+on tabular feature vectors.
+
+\begin{lstlisting}[caption={XGBoost training.}, label=lst:xgb]
+import xgboost as xgb
+
+xgb_model = xgb.XGBClassifier(
+    n_estimators=200,
+    max_depth=6,
+    learning_rate=0.1,
+    subsample=0.8,
+    colsample_bytree=0.8,
+    use_label_encoder=False,
+    eval_metric='logloss',
+    random_state=42
+)
+xgb_model.fit(X_train, y_train)
+
+xgb_acc = accuracy_score(y_test, xgb_model.predict(X_test))
+xgb_f1  = f1_score(y_test, xgb_model.predict(X_test))
+\end{lstlisting}
+
+\subsubsection{Results}
+
+\begin{result}[XGBoost Baseline Performance]
+Accuracy: \textbf{93.9\%} \quad F1-Score: 0.937 \quad (best classical model)
+\end{result}
+
+XGBoost outperforms Random Forest by approximately 2.2 percentage points, consistent
+with its stronger regularisation and sequential error-correction mechanism on the
+28-dimensional feature space.
+
+\newpage
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Deep Learning: ConvGRU Architecture}
+% ═════════════════════════════════════════════════════════════════════════════
+
+\subsection{Motivation}
+
+Classical classifiers treat each feature vector as an independent sample. They cannot
+naturally capture how VANET metrics evolve across a \textit{sequence} of windows, nor
+adapt internal representations as traffic patterns shift. The ConvGRU architecture
+addresses both shortcomings while remaining lightweight enough for embedded OBU
+deployment, as discussed in the literature survey~\cite{suman2025}.
+
+\subsection{Architecture}
+
+\begin{lstlisting}[caption={ConvGRU model definition in Keras.}, label=lst:convgru]
+import tensorflow as tf
+from tensorflow.keras import layers, models
+
+def build_convgru(input_shape, num_classes=1):
+    inputs = tf.keras.Input(shape=input_shape)
+
+    # CNN branch: spatial feature extraction
+    x = layers.Conv1D(64, kernel_size=3, activation='relu',
+                      padding='same')(inputs)
+    x = layers.BatchNormalization()(x)
+    x = layers.Conv1D(128, kernel_size=3, activation='relu',
+                      padding='same')(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.MaxPooling1D(pool_size=2)(x)
+    x = layers.Dropout(0.3)(x)
+
+    # GRU branch: temporal sequence modelling
+    x = layers.GRU(64, return_sequences=False)(x)
+    x = layers.Dropout(0.3)(x)
+
+    # Classification head
+    x = layers.Dense(64, activation='relu')(x)
+    x = layers.Dropout(0.2)(x)
+    outputs = layers.Dense(1, activation='sigmoid')(x)
+
+    model = models.Model(inputs, outputs)
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+        loss='binary_crossentropy',
+        metrics=['accuracy']
+    )
+    return model
+\end{lstlisting}
+
+\subsection{Design Rationale}
+
+\begin{description}[leftmargin=2em]
+    \item[Conv1D layers:] Two convolutional layers with 64 and 128 filters and kernel
+    size 3 extract local structural patterns across adjacent feature dimensions. Batch
+    normalisation stabilises training by reducing internal covariate shift. This mirrors
+    the CNN branch of the ConvGRU described in the literature~\cite{suman2025}.
+    \item[MaxPooling1D:] Reduces sequence length by half, providing translation
+    invariance and reducing parameter count for the subsequent GRU layer.
+    \item[GRU layer:] A single GRU with 64 units processes the pooled CNN output as a
+    sequence, capturing how the extracted spatial features evolve over time. GRUs are
+    preferred over LSTMs because they match sequential modelling performance with fewer
+    parameters and lower inference latency, which is critical for OBU deployment.
+    \item[Dropout (0.3 / 0.2):] Applied after convolutional blocks and GRU to prevent
+    co-adaptation of neurons under the relatively small training set.
+\end{description}
+
+\subsection{Sequence Preparation}
+
+Since the ConvGRU expects 3-D input (samples, timesteps, features), the 2-D feature
+matrix is reshaped:
+
+\begin{lstlisting}[caption={Reshaping features for ConvGRU input.}, label=lst:reshape]
+SEQ_LEN = 4   # 4 consecutive windows as one sequence
+
+# Reshape X_train: (n_samples, SEQ_LEN, n_features)
+X_train_seq = X_train[:len(X_train) - (len(X_train) % SEQ_LEN)]
+X_train_seq = X_train_seq.reshape(-1, SEQ_LEN,
+                                   X_train.shape[1])
+y_train_seq = y_train[:len(X_train_seq) * SEQ_LEN:SEQ_LEN]
+\end{lstlisting}
+
+Each sequence consists of 4 consecutive 1-second windows, giving the GRU a 4-second
+temporal context per inference step.
+
+\subsection{Training}
+
+\begin{lstlisting}[caption={ConvGRU training loop.}, label=lst:convgru_train]
+model = build_convgru((SEQ_LEN, X_train.shape[1]))
+
+history = model.fit(
+    X_train_seq, y_train_seq,
+    epochs=50,
+    batch_size=32,
+    validation_split=0.2,
+    callbacks=[
+        tf.keras.callbacks.EarlyStopping(
+            monitor='val_loss',
+            patience=10,
+            restore_best_weights=True
+        )
+    ],
+    verbose=1
+)
+\end{lstlisting}
+
+Early stopping monitors validation loss with patience 10, preventing overfitting while
+ensuring that the best checkpoint is retained.
+
+\subsection{Results}
+
+\begin{result}[ConvGRU Baseline Performance]
+Accuracy: \textbf{69.5\%} \quad F1-Score: 0.734
+\end{result}
+
+The ConvGRU underperforms the classical models on this dataset. This is consistent
+with known behaviour: deep temporal models require substantially more labelled sequential
+data to surpass ensemble methods on tabular features~\cite{suman2025}. The 3\,104-sample
+training set is an order of magnitude smaller than what ConvGRU architectures typically
+require for reliable temporal generalisation. The result nonetheless validates the
+architecture's functional implementation and establishes a baseline for adversarial
+evaluation.
+
+\newpage
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Adversarial Attack: Fast Gradient Sign Method (FGSM)}
+% ═════════════════════════════════════════════════════════════════════════════
+
+\subsection{Threat Model}
+
+An adversary who understands the features monitored by an IDS can attempt to subvert
+it by carefully controlling transmission behaviour to produce features that the model
+misclassifies as benign. FGSM provides a systematic procedure: the attacker computes
+the gradient of the model's loss with respect to the input features and nudges each
+feature in the direction that maximises the loss~\cite{mansourian2025}:
+
+\[
+    \tilde{x} = x + \epsilon \cdot \text{sign}\!\left(\nabla_x \mathcal{L}(\theta, x, y)\right)
+\]
+
+In a vehicular context this could mean modulating transmission power to shift an RSSI
+fingerprint, or throttling packet rate to keep PDR just above the detection threshold.
+
+\subsection{Implementation for Random Forest}
+
+Tree-based models do not have analytic gradients, so gradient approximation via
+finite differences is used:
+
+\begin{lstlisting}[caption={FGSM implementation for Random Forest (gradient approximation).},
+                   label=lst:fgsm_rf]
+def fgsm_attack_rf(model, X, y, epsilon=0.1):
+    """Finite-difference gradient approximation for tree ensembles."""
+    X_adv = X.copy()
+    h = 1e-4   # perturbation step for finite differences
+
+    for i in range(X.shape[1]):
+        X_plus  = X_adv.copy();  X_plus[:, i]  += h
+        X_minus = X_adv.copy();  X_minus[:, i] -= h
+
+        # Approximate gradient of cross-entropy loss
+        probs_plus  = model.predict_proba(X_plus)[:, 1]
+        probs_minus = model.predict_proba(X_minus)[:, 1]
+        grad = (probs_plus - probs_minus) / (2 * h)
+
+        # Multiply by label sign so gradient points toward wrong class
+        grad_signed = np.sign(grad * (2 * y - 1))
+        X_adv[:, i] += epsilon * grad_signed
+
+    return X_adv
+
+X_test_adv = fgsm_attack_rf(rf, X_test, y_test, epsilon=0.1)
+\end{lstlisting}
+
+\subsection{Implementation for ConvGRU}
+
+For the neural network, automatic differentiation provides exact gradients:
+
+\begin{lstlisting}[caption={FGSM implementation for ConvGRU using TensorFlow autodiff.},
+                   label=lst:fgsm_convgru]
+def fgsm_attack_nn(model, X, y, epsilon=0.1):
+    X_tf = tf.Variable(X.astype(np.float32))
+    y_tf = tf.constant(y.astype(np.float32).reshape(-1, 1))
+
+    with tf.GradientTape() as tape:
+        predictions = model(X_tf, training=False)
+        loss = tf.keras.losses.binary_crossentropy(y_tf, predictions)
+
+    gradient = tape.gradient(loss, X_tf)
+    perturbation = epsilon * tf.sign(gradient)
+    X_adv = X_tf + perturbation
+
+    return X_adv.numpy()
+\end{lstlisting}
+
+\subsection{Impact of FGSM}
+
+\begin{result}[Model Performance Under FGSM ($\epsilon = 0.1$)]
+\begin{tabular}{lrr}
+\toprule
+\textbf{Model} & \textbf{Clean Accuracy} & \textbf{Under FGSM} \\
+\midrule
+Random Forest & 91.7\% & \textbf{50.0\%} ($\downarrow$ 41.7pp) \\
+ConvGRU       & 69.5\% & \textbf{63.6\%} ($\downarrow$ 5.9pp) \\
+\bottomrule
+\end{tabular}
+\end{result}
+
+Random Forest's collapse to exactly 50\% accuracy (random-chance level) under FGSM
+is particularly striking. It occurs because the finite-difference gradient effectively
+identifies the decision boundaries of every tree in the ensemble, and a sufficiently
+large $\epsilon$ pushes virtually every test sample across at least one boundary. The
+ConvGRU shows smaller degradation in accuracy terms; however, its F1-score drops from
+0.734 to 0.470, indicating severe precision collapse on the attack class.
+
+\newpage
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Adversarial Defence: Retraining}
+% ═════════════════════════════════════════════════════════════════════════════
+
+\subsection{Adversarial Retraining Strategy}
+
+The primary defence evaluated is adversarial training: augmenting the training set with
+adversarially perturbed samples generated from the training data, then retraining the
+model on the combined clean + adversarial data~\cite{mansourian2025}.
+
+\begin{lstlisting}[caption={Adversarial retraining for Random Forest.}, label=lst:adv_retrain_rf]
+# Generate adversarial training examples
+X_train_adv = fgsm_attack_rf(rf, X_train, y_train, epsilon=0.1)
+
+# Combine clean and adversarial training data
+X_train_combined = np.vstack([X_train, X_train_adv])
+y_train_combined = np.hstack([y_train, y_train])
+
+# Retrain on augmented dataset
+rf_retrained = RandomForestClassifier(
+    n_estimators=200,
+    max_depth=15,
+    random_state=42
+)
+rf_retrained.fit(X_train_combined, y_train_combined)
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Adversarial retraining for ConvGRU.}, label=lst:adv_retrain_nn]
+X_train_seq_adv = fgsm_attack_nn(model, X_train_seq,
+                                  y_train_seq, epsilon=0.1)
+
+X_combined = np.vstack([X_train_seq, X_train_seq_adv])
+y_combined = np.hstack([y_train_seq, y_train_seq])
+
+model.fit(X_combined, y_combined, epochs=30, batch_size=32,
+          validation_split=0.2, verbose=0)
+\end{lstlisting}
+
+\subsection{Recovery Results}
+
+\begin{result}[Model Performance After Adversarial Retraining]
+\begin{tabular}{lrr}
+\toprule
+\textbf{Model} & \textbf{Under FGSM} & \textbf{After Retraining} \\
+\midrule
+Random Forest & 50.0\% & \textbf{94.6\%} \\
+ConvGRU       & 63.6\% & \textbf{69.0\%} \\
+\bottomrule
+\end{tabular}
+\end{result}
+
+Adversarial retraining restores Random Forest to 94.6\%, which \textit{exceeds} its
+original clean-data baseline of 91.7\% by 2.9 percentage points. The augmented training
+data from adversarial perturbations effectively provides additional boundary exploration,
+acting as implicit regularisation. ConvGRU recovers partially but remains limited by
+the small dataset size and insufficient temporal context in the 4-window sequences.
+
+\newpage
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Results and Analysis}
+% ═════════════════════════════════════════════════════════════════════════════
+
+\subsection{Comprehensive Model Comparison}
+
+Table~\ref{tab:final_results} presents the complete experimental results across all
+models and conditions.
+
+\begin{table}[H]
+\centering
+\caption{Final model comparison: all conditions.}
+\label{tab:final_results}
+\begin{tabular}{llrr}
+\toprule
+\textbf{Model} & \textbf{Condition} & \textbf{Accuracy} & \textbf{F1-Score} \\
+\midrule
+\multirow{3}{*}{Random Forest}
+    & Baseline   & 0.9169 & 0.9160 \\
+    & FGSM       & 0.5000 & 0.6667 \\
+    & Recovery   & \textbf{0.9459} & \textbf{0.9452} \\
+\midrule
+XGBoost
+    & Baseline   & 0.9388 & 0.9375 \\
+\midrule
+\multirow{3}{*}{ConvGRU}
+    & Baseline   & 0.6954 & 0.7342 \\
+    & FGSM       & 0.6364 & 0.4703 \\
+    & Recovery   & 0.6902 & 0.7134 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Key Findings}
+
+\begin{enumerate}[leftmargin=2em]
+
+\item \textbf{XGBoost achieves the best clean performance} (93.9\%), followed by
+adversarially retrained Random Forest (94.6\%), then baseline Random Forest (91.7\%),
+and finally ConvGRU (69.5\%). The tree ensemble models substantially outperform the
+deep learning model on this dataset size.
+
+\item \textbf{FGSM is devastatingly effective against Random Forest:} accuracy drops
+from 91.7\% to exactly 50.0\% (random chance). This confirms the adversarial
+vulnerability gap identified as the central open problem in the literature survey.
+The finite-difference gradient approximation correctly identifies decision boundaries
+across the entire 200-tree ensemble.
+
+\item \textbf{ConvGRU is more naturally robust to FGSM:} accuracy decreases by only
+5.9pp, whereas the F1-score drops 26pp, indicating that the model is pushed toward
+predicting the majority class rather than random assignment.
+
+\item \textbf{Adversarial retraining is a highly effective defence:} Random Forest
+recovers to 94.6\%, exceeding its original baseline. This demonstrates that the model
+learns to classify in regions near adversarial examples, which simultaneously improves
+generalisation.
+
+\item \textbf{The heading--speed cosine similarity feature} emerged as a novel
+contribution of the feature engineering design. It encodes the physical constraint that
+a vehicle's reported direction of motion must be consistent with its reported velocity,
+providing a cross-field consistency check analogous to the RSSI-position check in the
+RSDM paper~\cite{li2019}.
+
+\end{enumerate}
+
+\subsection{Feature Importance Analysis}
+
+Random Forest's feature importance scores (mean decrease in Gini impurity) confirm the
+theoretical predictions from the literature:
+
+\begin{itemize}[leftmargin=2em]
+    \item \texttt{msg\_count} ranks as the highest-importance feature for DoS detection,
+    consistent with the finding that channel flooding is most directly visible in packet
+    rate.
+    \item \texttt{pos\_noise\_mean} and \texttt{spd\_noise\_mean} are the next most
+    important features, confirming that noise injection attacks (ConstPosOffset,
+    RandomSpeedOffset) leave clear traces in the injected noise magnitudes.
+    \item \texttt{hs\_cos\_mean} ranks in the top 5, validating the heading--speed
+    consistency check as a meaningful detector of false data injection attacks.
+    \item \texttt{spd\_mag\_max} is the primary discriminator for constant and random
+    speed attacks, where attackers inject unrealistically high velocity values.
+\end{itemize}
+
+\newpage
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Discussion}
+% ═════════════════════════════════════════════════════════════════════════════
+
+\subsection{Validation of Literature Claims}
+
+The experimental results empirically validate or nuance several specific claims from the
+surveyed papers:
+
+\textbf{Claim from~\cite{alkhulaidi2024}:} ``Random Forest is the most consistently
+accurate and robust classifier on V2V and V2I traffic datasets, with PDR and RSSI as
+the most discriminative variables.''
+
+\textbf{Experimental validation:} Random Forest achieves 91.7\% accuracy, second only
+to XGBoost. Feature importance analysis confirms that physical-layer-derived features
+(noise magnitudes, speed consistency) are the most discriminative, consistent with the
+claim.
+
+\textbf{Claim from~\cite{mansourian2025}:} ``State-of-the-art VANET IDS models can
+suffer severe accuracy degradation under small adversarial perturbations.''
+
+\textbf{Experimental validation:} This is directly confirmed — RF drops to 50\% under
+$\epsilon = 0.1$ FGSM perturbation. The literature predicted exactly this behaviour,
+and the implementation reproduces it quantitatively.
+
+\textbf{Claim from~\cite{suman2025}:} ``ConvGRU achieves competitive accuracy on VANET
+benchmarks while maintaining inference times compatible with real-time embedded
+deployment.''
+
+\textbf{Experimental partial validation:} The ConvGRU achieves 69.5\% accuracy, which
+is below the ensemble baselines. This divergence from the published result is expected:
+the original ConvGRU paper trains on full CICIDS2017 and Car-Hacking datasets with
+hundreds of thousands of samples. The 3\,104-sample subset used here is insufficient
+for a deep sequential model to converge to its full potential.
+
+\subsection{Design Limitations and Future Work}
+
+\subsubsection{Dataset Subsetting}
+The 3\,104-sample balanced subset is necessitated by the computational constraints of
+the Kaggle T4 GPU environment. Processing all 22 million records would require
+distributed computing infrastructure. The subset preserves attack-type stratification
+but cannot represent the full temporal complexity of a multi-hour vehicular scenario.
+
+\subsubsection{Wireless Metric Fidelity}
+The VeReMi dataset does not contain explicit RSSI measurements. The noise fields
+(\texttt{pos\_noise}, \texttt{spd\_noise}) serve as proxies but are generated by the
+simulator's Gaussian noise model rather than a realistic propagation simulator. Future
+work should evaluate on datasets generated with SUMO+OMNeT++ co-simulation including
+explicit RSSI from the Friis or two-ray ground models.
+
+\subsubsection{Adversarial $\epsilon$ Calibration}
+The perturbation budget $\epsilon = 0.1$ is set as a fixed value in the experiments.
+A more rigorous adversarial evaluation would sweep $\epsilon$ from 0 to 0.5 and plot
+accuracy degradation curves, identifying the specific $\epsilon$ at which each model
+fails catastrophically.
+
+\subsubsection{Continual Learning}
+Attack strategies evolve continuously. The current models require full retraining when
+new attack types emerge. Incremental learning methods that update parameters without
+catastrophic forgetting of previously learned patterns are an important future direction
+for embedded OBU deployment~\cite{suman2025}.
+
+\subsubsection{C-V2X Readiness}
+All surveyed work and this implementation focus on IEEE\,802.11p/DSRC. The shift to
+Cellular-V2X (C-V2X) in 5G NR-V2X changes the physical-layer metric landscape and
+would require re-evaluation of the feature engineering assumptions, particularly RSSI
+interpretation under beamforming.
+
+\newpage
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Conclusion}
+% ═════════════════════════════════════════════════════════════════════════════
+
+This project has implemented, evaluated, and adversarially tested a complete intrusion
+detection pipeline for VANETs on the VeReMi dataset. The following conclusions are drawn:
+
+\begin{enumerate}[leftmargin=2em]
+
+    \item \textbf{Time-window feature engineering} over 1-second intervals produces
+    a compact 28-dimensional feature vector that captures the physical-layer signatures
+    of 19 distinct VANET attack types. The heading--speed cosine similarity feature
+    emerges as a novel physically-grounded consistency check.
+
+    \item \textbf{Ensemble classifiers dominate:} XGBoost (93.9\%) and Random Forest
+    (91.7\%) substantially outperform ConvGRU (69.5\%) on the available dataset.
+    This confirms the known principle that tree ensembles outperform deep models on
+    small tabular datasets, while deep models have the potential to surpass them at scale.
+
+    \item \textbf{The adversarial vulnerability gap is real and severe:} FGSM reduces
+    Random Forest accuracy from 91.7\% to 50.0\%, directly confirming the most
+    significant open problem identified in the literature survey.
+
+    \item \textbf{Adversarial retraining is effective:} Random Forest recovers to
+    94.6\% after retraining on a combined clean + adversarial dataset, \textit{exceeding}
+    its original baseline performance. This validates adversarial training as a viable
+    and practical defence for embedded vehicular systems.
+
+    \item \textbf{Three open problems} require future attention: (a) dataset realism
+    with full physical-layer RSSI simulation; (b) adversarial robustness as a design
+    constraint rather than an afterthought; and (c) continual learning for embedded
+    OBUs that must adapt to evolving attack strategies without full retraining.
+
+\end{enumerate}
+
+The central argument of the literature survey is validated empirically: VANET attacks
+exploit the open radio medium, and the most informative detection signals are the
+physical-layer metrics that directly reflect what the channel is experiencing. The
+proposed pipeline demonstrates that these signals, combined with rigorous adversarial
+evaluation, provide a strong foundation for secure, lightweight VANET intrusion detection
+in realistic deployments.
+
+\newpage
+
+% ═════════════════════════════════════════════════════════════════════════════
+\begin{thebibliography}{10}
+
+\bibitem{kapoor2024}
+P.~Kapoor, R.~K.~Singh, and A.~Prasad,
+``Class-aware oversampling for robust intrusion detection in VANETs using deep learning,''
+\textit{Discover Computing}, vol.~29, no.~1, p.~166, 2026.
+
+\bibitem{liu2023}
+Y.~Liu et al.,
+``EAMI: Efficient privacy-preserving authentication and machine learning based intrusion detection in VANETs,''
+\textit{IEEE Transactions on Vehicular Technology}, vol.~74, no.~3, 2025.
+
+\bibitem{manderna2023}
+A.~Manderna, S.~Kumar, U.~Dohare, M.~Aljaidi, O.~Kaiwartya, and J.~Lloret,
+``Vehicular network intrusion detection using a cascaded deep learning approach with multi-variant metaheuristic,''
+\textit{Sensors}, vol.~23, no.~21, p.~8772, 2023.
+
+\bibitem{li2019}
+W.~Li and D.~Zhang,
+``RSSI sequence and vehicle driving matrix based Sybil nodes detection in VANET,''
+in \textit{Proc.\ IEEE 11th Int.\ Conf.\ Communication Software and Networks (ICCSN)},
+2019, pp.~763--767.
+
+\bibitem{elshafai2023}
+W.~El-Shafai, A.~T.~Azar, and S.~Ahmed,
+``AI-driven ensemble classifier for jamming attack detection in VANETs to enhance security in smart cities,''
+\textit{IEEE Access}, vol.~13, pp.~50\,687--50\,713, 2025.
+
+\bibitem{alkhulaidi2024}
+N.~A.~Al-Khulaidi, A.~T.~Zahary, A.~A.~Al-Shargabi, and M.~A.~S.~Hazaa,
+``Machine learning for intrusion detection in vehicular ad-hoc networks (VANETs): A survey,''
+in \textit{Proc.\ 4th Int.\ Conf.\ Emerging Smart Technologies and Applications (eSmarTA)},
+2024, pp.~1--10.
+
+\bibitem{sharma2024}
+G.~Sharma et al.,
+``Intrusion detection system for false message identification in vehicular ad hoc networks using multivariate wireless metrics,''
+\textit{IEEE Access}, vol.~12, pp.~1--15, 2024.
+
+\bibitem{suman2025}
+P.~Suman, S.~Padhy, N.~Kumar, A.~Singh et al.,
+``An improved deep learning-based intrusion detection for reliable communication in VANET,''
+\textit{IEEE Transactions on Consumer Electronics}, vol.~71, no.~1, pp.~209--217, 2025.
+
+\bibitem{mansourian2025}
+P.~Mansourian, N.~Zhang, A.~Jaekel, and T.~Allsopp,
+``Enhancing machine learning-based IDS for vehicular networks by addressing adversarial attacks,''
+\textit{IEEE Transactions on Vehicular Technology}, vol.~74, no.~11, pp.~16\,935--16\,946, 2025.
+
+\bibitem{patel2026}
+K.~Patel et al.,
+``A collaborative edge-cloud framework for real-time intrusion detection in next-generation VANETs,''
+\textit{IEEE Internet of Things Journal}, vol.~13, no.~2, 2026.
+
+\end{thebibliography}
+
+\end{document}
